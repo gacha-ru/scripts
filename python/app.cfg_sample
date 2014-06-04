@@ -1,0 +1,5 @@
+# IAMで権限しぼったユーザーを作成し、そのユーザーのキーを使用する
+
+[name]
+AWS_ACCESS_KEY = アクセスキー
+AWS_SECRET_ACCESS_KEY = シークレットアクセスキー
