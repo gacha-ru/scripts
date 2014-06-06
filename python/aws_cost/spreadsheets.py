@@ -40,7 +40,7 @@ def open_sheet( sheet_name, sheet_page ):
     try:
         wks = gc.open( sheet_name ).worksheet( sheet_page )
     except:
-        wks = gc.open( sheet_name ).add_worksheet( sheet_page, 32, 20 )
+        wks = gc.open( sheet_name ).add_worksheet( sheet_page, 50, 50 )
         init_sheet( wks )
     return wks
 
