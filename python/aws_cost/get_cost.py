@@ -13,7 +13,6 @@ from service_list import *
 
 '''
 [aws_cost_count function]
-this function culc each app cost.
 '''
 
 def aws_cost_count( app_name, aws_access_key, aws_secret_access_key ):
