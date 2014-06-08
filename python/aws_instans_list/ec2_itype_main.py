@@ -5,13 +5,11 @@ import traceback
 import ConfigParser
 import re
 import boto
-import datetime
 from sys import argv
 
 # botoで情報取得
 from get_instance_list import ec2_get_instance_type
 
-# config read
 config = ConfigParser.SafeConfigParser()
 # ../app.cfgからAWS接続情報を読み取る
 config.read('../app.cfg')
@@ -25,13 +23,15 @@ if __name__ == '__main__':
     argc = len(argvs)
 
     if not argc == 3:
-       print u'Usage: python %s app_name' % argv[0]
+       print u'Usage: python %s app_name filter_word' % argv[0]
        quit()
 
-    # Set Application Name
+    # app.cfgから読み取る情報の選択
     app_name = argvs[1]
+    # 対象とするName Tagの前後に*をつけることで部分一致とする
     filter_word = "*" + argvs[2] + "*"
 
+    # region選択(app_nameで判断)
     if app_name in { "usa" }:
         region = "us-west-2"
     else :

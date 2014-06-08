@@ -25,40 +25,48 @@ def google_login():
 
 # sheetのフォーマットを作る
 def init_sheet( wks ):
-    wks.update_cell( 1, 1, "Service/Date")
-    for i in range(len(ec2_cost_dict)):
-        wks.update_cell( 2 + i, 1, ec2_cost_dict[i])
+    wks.update_cell( 1, 1, "Name" )
+    wks.update_cell( 1, 2, "Instance Type" )
+    wks.update_cell( 1, 3, "hourly" )
+    wks.update_cell( 1, 4, "daily" )
+    wks.update_cell( 1, 5, "monthly" )
 
 
 # worksheet情報を取得。指定したworksheetが無い場合は作成。
-def open_sheet( sheet_name, sheet_page ):
+def open_sheet( spreadsheet, worksheet ):
     # googleアカウントログイン
     gc = google_login()
-    print sheet_name,sheet_page
+    print spreadsheet,worksheet
     # シートがあれば開く。無ければ新規追加し、フォーマット作成
     try:
-        wks = gc.open( sheet_name ).worksheet( sheet_page )
+        wks = gc.open( spreadsheet ).worksheet( worksheet )
     except:
-        wks = gc.open( sheet_name ).add_worksheet( sheet_page, 50, 50 )
+        wks = gc.open( spreadsheet ).add_worksheet( worksheet, 50, 50 )
         init_sheet( wks )
     return wks
 
 
 # dataをgoogle spreadsheetへアップ
-def update_sheet( sheet_name, sheet_page, data ):
+def update_sheet( spreadsheet, worksheet, data, search ):
     # 日付を入れる
     d = datetime.now()
     month = d.month
     d = d.strftime('%Y/%m/%d')
 
     # シート情報を取得
-    wks = open_sheet( sheet_name, sheet_page )
+    wks = open_sheet( spreadsheet, worksheet )
+    col_num = len(wks.col_values(1)) + 1
     row_num = len(wks.row_values(1))
 
     # 各データをシートへアップ
-    i = 0
-    cost = 0
-    #print data.keys()
-    for i,name in enumerate(data.keys()):
-        #wks.update_cell( 2 + i, row_num + 1, cost)
-        print i,name,data[name]
+    for i,name in enumerate(sorted(data.keys())):
+        daily = ec2_cost_dict[data[name]] * 24
+        monthly = daily * 30.5
+        print name,data[name]
+        print "daily_cost   : ",daily
+        print "monthly_cost : ",monthly
+        wks.update_cell( col_num + i, 1, name )
+        wks.update_cell( col_num + i, 2, data[name] )
+        wks.update_cell( col_num + i, 3, ec2_cost_dict[data[name]] )
+        wks.update_cell( col_num + i, 4, daily )
+        wks.update_cell( col_num + i, 5, monthly )
