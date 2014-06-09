@@ -1,11 +1,7 @@
 #!/usr/bin/python
 # coding: utf8
 import sys
-import traceback
 import ConfigParser
-import re
-import boto
-import datetime
 from sys import argv
 
 # botoで情報取得
@@ -25,8 +21,8 @@ if __name__ == '__main__':
     argc = len(argvs)
 
     if not argc == 2:
-       print u'Usage: python %s app_name' % argv[0]
-       quit()
+        print u'Usage: python %s app_name' % argv[0]
+        quit()
 
     # Set Application Name
     app_name = argvs[1]
@@ -35,4 +31,4 @@ if __name__ == '__main__':
     print app_name
     aws_access_key = config.get(app_name, 'AWS_ACCESS_KEY')
     aws_secret_access_key = config.get(app_name, 'AWS_SECRET_ACCESS_KEY')
-    aws_cost_count( app_name, aws_access_key, aws_secret_access_key )
+    aws_cost_count(app_name, aws_access_key, aws_secret_access_key)

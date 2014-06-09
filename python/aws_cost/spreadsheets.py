@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os, time, gspread, sys
-import spreadsheets,service_list
+import os
+import gspread
+import sys
 import codecs
-from datetime import datetime,timedelta
-from service_list import *
+from datetime import datetime, timedelta
+from service_list import aws_service_list
 
 # リダイレクト時のエンコードを"utf8"に
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
@@ -24,29 +25,29 @@ def google_login():
 
 
 # sheetのフォーマットを作る
-def init_sheet( wks ):
-    wks.update_cell( 1, 1, "Service/Date")
+def init_sheet(wks):
+    wks.update_cell(1, 1, "Service/Date")
     for i in range(len(aws_service_list)):
-        wks.update_cell( 2 + i, 1, aws_service_list[i])
-    wks.update_cell( 2 + i + 1, 1, "total")
+        wks.update_cell(2 + i, 1, aws_service_list[i])
+    wks.update_cell(2 + i + 1, 1, "total")
 
 
 # worksheet情報を取得。指定したworksheetが無い場合は作成。
-def open_sheet( sheet_name, sheet_page ):
+def open_sheet(sheet_name, sheet_page):
     # googleアカウントログイン
     gc = google_login()
-    print sheet_name,sheet_page
+    print sheet_name, sheet_page
     # シートがあれば開く。無ければ新規追加し、フォーマット作成
     try:
-        wks = gc.open( sheet_name ).worksheet( sheet_page )
+        wks = gc.open(sheet_name).worksheet(sheet_page)
     except:
-        wks = gc.open( sheet_name ).add_worksheet( sheet_page, 50, 50 )
-        init_sheet( wks )
+        wks = gc.open(sheet_name).add_worksheet(sheet_page, 50, 50)
+        init_sheet(wks)
     return wks
 
 
 # dataをgoogle spreadsheetへアップ
-def update_sheet( sheet_name, sheet_page, data ):
+def update_sheet(sheet_name, sheet_page, data):
     # 日付を入れる
     d = datetime.now() + timedelta(days=-1)
     month = d.month
@@ -54,18 +55,18 @@ def update_sheet( sheet_name, sheet_page, data ):
     sheet_page = str(month) + u'月'
 
     # シート情報を取得
-    wks = open_sheet( sheet_name, sheet_page )
+    wks = open_sheet(sheet_name, sheet_page)
     row_num = len(wks.row_values(1))
 
     # 一行目は一日前の日付
-    wks.update_cell( 1, row_num + 1, d)
-    
+    wks.update_cell(1, row_num + 1, d)
+
     # 各データをシートへアップ
     i = 0
     cost = 0
-    for i,cost in enumerate(data):
-        wks.update_cell( 2 + i, row_num + 1, cost)
-        print i,cost
+    for i, cost in enumerate(data):
+        wks.update_cell(2 + i, row_num + 1, cost)
+        print i, cost
 
     # 最終行は合計値を入れる
-    wks.update_cell( 2 + i + 1, row_num + 1, sum(data) )
+    wks.update_cell(2 + i + 1, row_num + 1, sum(data))

@@ -1,27 +1,17 @@
 #!/usr/bin/python
 # coding: utf8
-import sys
-import traceback
-import re
 import boto
 import boto.ec2
-import datetime
 
 # google spreadsheet操作系関数
 import spreadsheets
-# サービスのリストを下記ファイルで管理
-#from ec2_cost_dict import *
-import ec2_cost_dict
 
 
-def ec2_get_instance_type( 
-        app_name, aws_access_key, aws_secret_access_key,
-        region, filter_word):
-
+def ec2_get_instance_type(app_name, aws_access_key,
+                          aws_secret_access_key, region, filter_word):
     # boto.ec2への認証
-    conn = boto.ec2.connect_to_region( 
-            region,aws_access_key_id=aws_access_key,
-            aws_secret_access_key=aws_secret_access_key)
+    conn = boto.ec2.connect_to_region(region, aws_access_key_id=aws_access_key,
+                                      aws_secret_access_key=aws_secret_access_key)
 
     # filter_word * is OK,but [0-9] is NG.
     filter_instance = conn.get_all_instances(
@@ -41,4 +31,4 @@ def ec2_get_instance_type(
     worksheet = "now_instances"
 
     # google spreadsheetへ書き込み
-    spreadsheets.update_sheet( spreadsheet, worksheet, ec2_dict, filter_word )
+    spreadsheets.update_sheet(spreadsheet, worksheet, ec2_dict, filter_word)
