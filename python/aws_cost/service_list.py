@@ -7,7 +7,7 @@ aws_service_list = [
     'AmazonRDS',
     'AmazonRoute53',
     'AmazonS3',
-    'AmazonSimpleDB',
+    'AmazonCloudFront',
     'AmazonSNS',
     'AWSDataTransfer',
     'AWSQueueService',
