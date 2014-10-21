@@ -20,10 +20,11 @@ def ec2_get_instance_type(app_name, aws_access_key,
     ec2_dict = {}
     for reservation in filter_instance:
         for instance in reservation.instances:
-            server_name = instance.__dict__['tags']["Name"]
-            i_type = instance.instance_type
-            print server_name + '\t' + i_type
-            ec2_dict[server_name] = i_type
+            if instance.state == 'running':
+                server_name = instance.__dict__['tags']["Name"]
+                i_type = instance.instance_type
+                print server_name + '\t' + i_type
+                ec2_dict[server_name] = i_type
 
     # spreadsheet名
     spreadsheet = app_name + "_cost"
