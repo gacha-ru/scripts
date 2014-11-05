@@ -34,5 +34,8 @@ ec2_cost_dict = {
     "i2.4xlarge": 4.00,
     "i2.8xlarge": 8.00,
     "hs1.8xlarge": 5.40,
-    "hi1.4xlarge": 3.28
+    "hi1.4xlarge": 3.28,
+    "t2.micro": 0.02,
+    "t2.small": 0.04,
+    "t2.medium": 0.080
 }
