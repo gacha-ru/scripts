@@ -6,6 +6,7 @@ import boto.rds
 # google spreadsheet操作系関数
 import spreadsheets
 
+
 def rds_get_info(app_name, aws_access_key,
         aws_secret_access_key, region):
     #region connect

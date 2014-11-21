@@ -4,7 +4,8 @@ import os
 import sys
 import codecs
 import gspread
-from rds_cost_dict import rds_cost_dict
+from rds_cost_dict import rds_tokyo_cost_dict
+from rds_cost_dict import rds_oregon_cost_dict
 from datetime import datetime
 
 # リダイレクト時のエンコードを"utf8"に
@@ -26,14 +27,17 @@ def google_login():
 
 # sheetのフォーマットを作る
 def init_sheet(wks):
-    wks.update_cell(1, 1, "Name")
-    wks.update_cell(1, 2, "Instance Type")
-    wks.update_cell(1, 3, "Storage Type")
-    wks.update_cell(1, 4, "Storage")
-    wks.update_cell(1, 5, "IOPS")
-    wks.update_cell(1, 6, "hourly")
-    wks.update_cell(1, 7, "daily")
-    wks.update_cell(1, 8, "monthly")
+    cell_range = 'A1:H1'
+    cell_list = wks.range(cell_range)
+    cell_list[0].value = 'Name'
+    cell_list[1].value = 'Instance Type'
+    cell_list[2].value = 'Storage Type'
+    cell_list[3].value = 'Storage'
+    cell_list[4].value = 'IOPS'
+    cell_list[5].value = 'hourly'
+    cell_list[6].value = 'daily'
+    cell_list[7].value = 'monthly'
+    wks.update_cells(cell_list)
 
 
 # RDS単価用のsheetのフォーマットを作る
@@ -78,16 +82,28 @@ def update_sheet(spreadsheet, worksheet, rds_name, rds_itype, rds_storage, rds_i
             storage_type = "PIOPS"
 
         column_num = col_num + i
+        piops_cost='IF(C%(column)s="Magnetic", 0.12*D%(column)s/30.5/24 , 0.15*D%(column)s/30.5/24)' %  { 'column':str(column_num) }
 
-        wks.update_cell(column_num, 1, rds_name[i])
-        wks.update_cell(column_num, 2, rds_itype[i])
-        wks.update_cell(column_num, 3, storage_type)
-        wks.update_cell(column_num, 4, rds_storage[i])
-        wks.update_cell(column_num, 5, rds_iops[i])
-        wks.update_cell(column_num, 6, '=VLOOKUP(B%(column)s, RDS_COST!A10:B24, 2, FALSE)+IF(C%(column)s="Magnetic", 0.12*D%(column)s/30.5/24 ,\
-                0.15*D%(column)s/30.5/24)+IF(E%(column)s="None",\
-                0,\
-                E%(column)s/1000*120/30.5/24)' % { 'column':str(column_num) } )
+        try:
+            column_num = col_num + i
+            cell_range = 'A' + str(column_num) + ':H' + str(column_num)
+            cell_list = wks.range(cell_range)
+            cell_list[0].value = rds_name[i]
+            cell_list[1].value = rds_itype[i]
+            cell_list[2].value = storage_type
+            cell_list[3].value = rds_storage[i]
+            cell_list[4].value = rds_iops[i]
+            cell_list[5].value = '=VLOOKUP(B%(column)s, RDS_COST!A2:B24, 2, FALSE)+%(piops_if)s+IF(E%(column)s="None",0,E%(column)s/1000*120/30.5/24)' % { 'column':str(column_num), 'piops_if':str(piops_cost) }
+            cell_list[6].value = '=F' + str(column_num) + '*24'
+            cell_list[7].value = '=G' + str(column_num) + '*30.5'
+            wks.update_cells(cell_list)
+
+        except Exception as e:
+            print '=== エラー内容 ==='
+            print 'type:' + str(type(e))
+            print 'args:' + str(e.args)
+            print 'message:' + e.message
+            print 'error:' + str(e)
 
 
 # RDSの単価シートを作成
@@ -96,11 +112,22 @@ def rds_costsheet_update(spreadsheet, worksheet):
     wks = open_sheet(spreadsheet, worksheet)
     col_num = len(wks.col_values(1)) + 1
 
+    rds_cost_dict = []
+    print spreadsheet
+
+    if 'chaosglobal' in spreadsheet:
+        print "Oregon"
+        rds_cost_dict = rds_oregon_cost_dict
+    else:
+        print "Tokyo"
+        rds_cost_dict = rds_tokyo_cost_dict
+
     # 各データをシートへアップ
-    #for type,cost in rds_cost_dict.keys(),rds_cost_dict.values():
     for i,type in enumerate(rds_cost_dict.keys()):
-        print type
         column_num = col_num + i
-        wks.update_cell(column_num, 1, type)
-        wks.update_cell(column_num, 2, rds_cost_dict[type])
+        cell_range = 'A' + str(column_num) + ':B' + str(column_num)
+        cell_list = wks.range(cell_range)
+        cell_list[0].value = type
+        cell_list[1].value = rds_cost_dict[type]
+        wks.update_cells(cell_list)
 
