@@ -57,15 +57,21 @@ def update_sheet(spreadsheet, worksheet, data, search):
     wks = open_sheet(spreadsheet, worksheet)
     col_num = len(wks.col_values(1)) + 1
 
-    # 各データをシートへアップ
+    cell_len = col_num + len(data.keys()) - 1
+    cell_range = 'A' + str(col_num) + ':E' + str(cell_len)
+    cell_list = []
+    cell_list = wks.range(cell_range)
+
+    # 各データを格納
     for i, name in enumerate(sorted(data.keys())):
         daily = ec2_cost_dict[data[name]] * 24
         monthly = daily * 30.5
-        print name, data[name]
-        print "daily_cost   : ", daily
-        print "monthly_cost : ", monthly
-        wks.update_cell(col_num + i, 1, name)
-        wks.update_cell(col_num + i, 2, data[name])
-        wks.update_cell(col_num + i, 3, ec2_cost_dict[data[name]])
-        wks.update_cell(col_num + i, 4, daily)
-        wks.update_cell(col_num + i, 5, monthly)
+
+        cell_list[(i)+(i*4)].value = name
+        cell_list[(i+1)+(i*4)].value = data[name]
+        cell_list[(i+2)+(i*4)].value = ec2_cost_dict[data[name]]
+        cell_list[(i+3)+(i*4)].value = daily
+        cell_list[(i+4)+(i*4)].value = daily * 30.5
+
+    # シートへ一括アップ
+    wks.update_cells(cell_list)

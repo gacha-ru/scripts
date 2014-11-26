@@ -19,18 +19,20 @@ if __name__ == '__main__':
     argvs = sys.argv
     argc = len(argvs)
 
-    if not argc == 2:
-        print u'Usage: python %s app_name' % argv[0]
-        quit()
+    if not argc == 3:
+        print u'Usage: python %s app_name region' % argv[0]
+        quit(1)
 
     # app.cfgから読み取る情報の選択
     app_name = argvs[1]
+    region = argvs[2]
 
-    # region選択(app_nameで判断)
-    if app_name in {"oregon"}:
-        region = "us-west-2"
+    # region判定
+    if region in {"ap-northeast-1", "us-west-2"}:
+        pass
     else:
-        region = "ap-northeast-1"
+        print u'Usage: %s is not region' % argv[2]
+        quit(1)
 
     #instance_listをgoogle spreadsheetへ入れる
     aws_access_key = config.get(app_name, 'AWS_ACCESS_KEY')

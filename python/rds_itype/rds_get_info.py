@@ -47,6 +47,6 @@ def rds_get_info(app_name, aws_access_key,
 
     # google spreadsheetへ書き込み
     # 単価用シート
-    spreadsheets.rds_costsheet_update(spreadsheet, "RDS_COST")
+    spreadsheets.rds_costsheet_update(spreadsheet, "RDS_COST", region)
     # DBデータ用シート
     spreadsheets.update_sheet(spreadsheet, worksheet, rds_name, rds_itype, rds_storage, rds_iops)
