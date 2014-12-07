@@ -79,28 +79,28 @@ def update_sheet(spreadsheet, worksheet, rds_name, rds_itype, rds_storage, rds_i
     cell_list = wks.range(cell_range)
 
     # 各データを格納
-    for i,name in enumerate(rds_name):
+    for i, name in enumerate(rds_name):
         print rds_name[i]
         column_num = col_num + i
 
         if rds_iops[i] == 'None':
             storage_type = "Magnetic"
-            rds_iops[i] = '=IF(C%(column)s="gp2", D%(column)s*3, "None")' % { 'column':str(column_num) }
+            rds_iops[i] = '=IF(C%(column)s="gp2", D%(column)s*3, "None")' % {'column': str(column_num)}
         else:
             storage_type = "PIOPS"
 
-        piops_throughput='IF(C%(column)s="PIOPS",E%(column)s*0.12/30.5/24,0)' % { 'column':str(column_num) }
-        storage_cost='IF(C%(column)s="Magnetic", 0.12*D%(column)s/30.5/24 , IF(C%(column)s="gp2",0.138*D%(column)s/30.5/24,0.15*D%(column)s/30.5/24)+%(throughput_if)s)' % { 'column':str(column_num), 'throughput_if':str(piops_throughput) }
+        piops_throughput = 'IF(C%(column)s="PIOPS",E%(column)s*0.12/30.5/24,0)' % {'column': str(column_num)}
+        storage_cost = 'IF(C%(column)s="Magnetic", 0.12*D%(column)s/30.5/24 , IF(C%(column)s="gp2",0.138*D%(column)s/30.5/24,0.15*D%(column)s/30.5/24)+%(throughput_if)s)' % {'column': str(column_num), 'throughput_if': str(piops_throughput)}
 
         column_num = col_num + i
-        cell_list[(i)+(i*7)].value = rds_name[i]
-        cell_list[(i+1)+(i*7)].value = rds_itype[i]
-        cell_list[(i+2)+(i*7)].value = storage_type
-        cell_list[(i+3)+(i*7)].value = rds_storage[i]
-        cell_list[(i+4)+(i*7)].value = rds_iops[i]
-        cell_list[(i+5)+(i*7)].value = '=VLOOKUP(B%(column)s, RDS_COST!A2:B24, 2, FALSE)+%(storage_if)s' % { 'column':str(column_num), 'storage_if':str(storage_cost) }
-        cell_list[(i+6)+(i*7)].value = '=F' + str(column_num) + '*24'
-        cell_list[(i+7)+(i*7)].value = '=G' + str(column_num) + '*30.5'
+        cell_list[(i) + (i * 7)].value = rds_name[i]
+        cell_list[(i + 1) + (i * 7)].value = rds_itype[i]
+        cell_list[(i + 2) + (i * 7)].value = storage_type
+        cell_list[(i + 3) + (i * 7)].value = rds_storage[i]
+        cell_list[(i + 4) + (i * 7)].value = rds_iops[i]
+        cell_list[(i + 5) + (i * 7)].value = '=VLOOKUP(B%(column)s, RDS_COST!A2:B24, 2, FALSE)+%(storage_if)s' % {'column': str(column_num), 'storage_if': str(storage_cost)}
+        cell_list[(i + 6) + (i * 7)].value = '=F' + str(column_num) + '*24'
+        cell_list[(i + 7) + (i * 7)].value = '=G' + str(column_num) + '*30.5'
 
     # 上記で格納した値を一括アップ
     try:
@@ -110,7 +110,6 @@ def update_sheet(spreadsheet, worksheet, rds_name, rds_itype, rds_storage, rds_i
         print 'args:' + str(e.args)
         print 'message:' + str(e.message)
         print 'error:' + str(e)
-
 
 
 # RDSの単価シートを作成
@@ -140,9 +139,9 @@ def rds_costsheet_update(spreadsheet, worksheet, region):
     cell_list = wks.range(cell_range)
 
     # 各データをシートへアップ
-    for i,type in enumerate(rds_cost_dict.keys()):
-        cell_list[(i)+(i*1)].value = type
-        cell_list[(i+1)+(i*1)].value = rds_cost_dict[type]
+    for i, type in enumerate(rds_cost_dict.keys()):
+        cell_list[(i) + (i * 1)].value = type
+        cell_list[(i + 1) + (i * 1)].value = rds_cost_dict[type]
 
     try:
         wks.update_cells(cell_list)
@@ -151,4 +150,3 @@ def rds_costsheet_update(spreadsheet, worksheet, region):
         print 'args:' + str(e.args)
         print 'message:' + str(e.message)
         print 'error:' + str(e)
-

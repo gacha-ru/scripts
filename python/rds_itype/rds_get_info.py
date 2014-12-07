@@ -8,7 +8,7 @@ import spreadsheets
 
 
 def rds_get_info(app_name, aws_access_key,
-        aws_secret_access_key, region):
+                 aws_secret_access_key, region):
     #region connect
     conn = boto.rds.connect_to_region(
         region,
@@ -35,9 +35,10 @@ def rds_get_info(app_name, aws_access_key,
             rds_iops.append(iops)
 
             print rds_name[count] + '\t' + \
-                    rds_itype[count] + '\t' + \
-                    rds_storage[count] + '\t' + \
-                    rds_iops[count]
+                rds_itype[count] + '\t' + \
+                rds_storage[count] + '\t' + \
+                rds_iops[count]
+
             count += 1
 
     # spreadsheet名
