@@ -4,4 +4,6 @@ build:
     -  script:
         name: some simple test!
         code: |-
-          go run go/hello.go
+          go get github.com/go-martini/martini
+          go run go/server.go
+          curl http://localhost:3000
