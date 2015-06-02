@@ -7,19 +7,14 @@ ec2_itype
 1時間、日、月毎の費用を1台ずつGoogleDriveのspreadsheetに記録する。
 
 ### 使用準備 ###
-1. pythonディレクトリでapp.cfgを作成する。（pythonディレクトリのREADME参照）
+1. pythonディレクトリでapp.cfg,account.jsonを用意する。（pythonディレクトリのREADME参照）
 
 2. Pythonモジュール boto,gspread,oauth2clientをインストール  
     ```
     pip install boto gspread oauth2client
     ```
 
-3. googleユーザー情報をaccount.jsonというファイル名で用意する      
-    ※ ユーザー名・パスワードでのログインは不可となった為、OAuthログイン
-      用意の手順は下記リンク参照
-    http://gspread.readthedocs.org/en/latest/oauth2.html
-
-4. GoogleDriveのspreadsheetでapp.cfgで設定した"[name]_cost"シートを作成する
+3. GoogleDriveのspreadsheetでapp.cfgで設定した"[name]_cost"シートを作成する
    例：app.cfgで[aws]の場合"aws_cost"というシートを作成
 
 

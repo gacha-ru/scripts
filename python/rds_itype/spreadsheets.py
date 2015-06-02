@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os
 import sys
 import codecs
 import gspread
+import json
 from rds_cost_dict import rds_tokyo_cost_dict
 from rds_cost_dict import rds_oregon_cost_dict
 from datetime import datetime
+from oauth2client.client import SignedJwtAssertionCredentials
 
 # リダイレクト時のエンコードを"utf8"に
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
@@ -17,7 +18,12 @@ sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 def google_login():
     # attempt to log in to your google account
     try:
-        gc = gspread.login(os.environ["G_USER"], os.environ["G_PASS"])
+        json_key = json.load(open('../account.json'))
+        scope = ['https://spreadsheets.google.com/feeds']
+
+        credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'], scope)
+        gc = gspread.authorize(credentials)
+
         print('log in success!!')
         return gc
     except:

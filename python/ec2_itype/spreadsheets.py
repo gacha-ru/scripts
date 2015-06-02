@@ -17,7 +17,7 @@ sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 def google_login():
     # attempt to log in to your google account
     try:
-        json_key = json.load(open('account.json'))
+        json_key = json.load(open('../account.json'))
         scope = ['https://spreadsheets.google.com/feeds']
 
         credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'], scope)
