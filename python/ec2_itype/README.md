@@ -9,15 +9,16 @@ ec2_itype
 ### 使用準備 ###
 1. pythonディレクトリでapp.cfgを作成する。（pythonディレクトリのREADME参照）
 
-2. Pythonモジュール boto,gspreadをインストール  
+2. Pythonモジュール boto,gspread,oauth2clientをインストール  
     ```
-    pip install boto gspread
+    pip install boto gspread oauth2client
     ```
 
-3. googleユーザー情報を環境変数として設定する      
+3. googleユーザー情報をaccount.jsonというファイル名で用意する      
     ```
-    export G_USER="gmailのメールアドレス"
-    export G_PASS="googleアカウントのパスワード"
+    ※ ユーザー名・パスワードでのログインは不可となった為、OAuthログイン
+    　用意の手順は下記リンク参照
+    http://gspread.readthedocs.org/en/latest/oauth2.html
     ```
 
 4. GoogleDriveのspreadsheetでapp.cfgで設定した"[name]_cost"シートを作成する

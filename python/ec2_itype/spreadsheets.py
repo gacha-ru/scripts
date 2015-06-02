@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os
 import sys
 import codecs
 import gspread
+import json
 from ec2_cost_dict import ec2_cost_dict
 from datetime import datetime
+from oauth2client.client import SignedJwtAssertionCredentials
 
 # リダイレクト時のエンコードを"utf8"に
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
@@ -16,7 +17,12 @@ sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 def google_login():
     # attempt to log in to your google account
     try:
-        gc = gspread.login(os.environ["G_USER"], os.environ["G_PASS"])
+        json_key = json.load(open('account.json'))
+        scope = ['https://spreadsheets.google.com/feeds']
+
+        credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'], scope)
+        gc = gspread.authorize(credentials)
+
         print('log in success!!')
         return gc
     except:
@@ -67,11 +73,11 @@ def update_sheet(spreadsheet, worksheet, data, search):
         daily = ec2_cost_dict[data[name]] * 24
         monthly = daily * 30.5
 
-        cell_list[(i)+(i*4)].value = name
-        cell_list[(i+1)+(i*4)].value = data[name]
-        cell_list[(i+2)+(i*4)].value = ec2_cost_dict[data[name]]
-        cell_list[(i+3)+(i*4)].value = daily
-        cell_list[(i+4)+(i*4)].value = daily * 30.5
+        cell_list[(i) + (i * 4)].value = name
+        cell_list[(i + 1) + (i * 4)].value = data[name]
+        cell_list[(i + 2) + (i * 4)].value = ec2_cost_dict[data[name]]
+        cell_list[(i + 3) + (i * 4)].value = daily
+        cell_list[(i + 4) + (i * 4)].value = monthly
 
     # シートへ一括アップ
     wks.update_cells(cell_list)
