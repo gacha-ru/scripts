@@ -15,11 +15,9 @@ ec2_itype
     ```
 
 3. googleユーザー情報をaccount.jsonというファイル名で用意する      
-    ```
     ※ ユーザー名・パスワードでのログインは不可となった為、OAuthログイン
-    　用意の手順は下記リンク参照
+      用意の手順は下記リンク参照
     http://gspread.readthedocs.org/en/latest/oauth2.html
-    ```
 
 4. GoogleDriveのspreadsheetでapp.cfgで設定した"[name]_cost"シートを作成する
    例：app.cfgで[aws]の場合"aws_cost"というシートを作成
