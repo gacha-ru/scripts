@@ -1,9 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import os
 import sys
 import codecs
 import gspread
 import json
+import traceback
 from rds_cost_dict import rds_tokyo_cost_dict
 from rds_cost_dict import rds_oregon_cost_dict
 from datetime import datetime
@@ -13,22 +15,46 @@ from oauth2client.client import SignedJwtAssertionCredentials
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
 
-# googleアカウントにログイン
-# G_USER,G_PASSは環境変数で宣言している
-def google_login():
-    # attempt to log in to your google account
-    try:
-        json_key = json.load(open('../account.json'))
-        scope = ['https://spreadsheets.google.com/feeds']
+class Google:
+    def __init__(self):
+        jsonfile = "../account.json"
 
-        credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'], scope)
-        gc = gspread.authorize(credentials)
+    # googleアカウントにログイン
+    # account.jsonからログイン情報を取得する
+    def login(self):
+        # attempt to log in to your google account
+        try:
+            base = os.path.dirname(os.path.abspath(__file__))
+            json_key = json.load(open(jsonfile))
+            scope = ['https://spreadsheets.google.com/feeds']
 
-        print('log in success!!')
-        return gc
-    except:
-        print('log in fail')
-        sys.exit()
+            credentials = SignedJwtAssertionCredentials(json_key['client_email'], json_key['private_key'], scope)
+            gc = gspread.authorize(credentials)
+
+            print('log in success!!')
+            return gc
+        except:
+            print('log in fail')
+            print "--------------------------------------------"
+            print traceback.format_exc(sys.exc_info()[2])
+            print "--------------------------------------------"
+            sys.exit()
+
+
+    # worksheet情報を取得。指定したworksheetが無い場合は作成。
+    def open_sheet(self, gc, spreadsheet, worksheet):
+        print spreadsheet, worksheet
+        # シートがあれば開く。無ければ新規追加し、フォーマット作成
+        try:
+            wks = gc.open(spreadsheet).worksheet(worksheet)
+        except:
+            wks = gc.open(spreadsheet).add_worksheet(worksheet, 50, 50)
+            if worksheet == "RDS_COST":
+                init_cost_sheet(wks)
+            else:
+                init_sheet(wks)
+        return wks
+
 
 
 # sheetのフォーマットを作る
@@ -52,25 +78,10 @@ def init_cost_sheet(wks):
     wks.update_cell(1, 2, "$/h")
 
 
-# worksheet情報を取得。指定したworksheetが無い場合は作成。
-def open_sheet(spreadsheet, worksheet):
-    # googleアカウントログイン
-    gc = google_login()
-    print spreadsheet, worksheet
-    # シートがあれば開く。無ければ新規追加し、フォーマット作成
-    try:
-        wks = gc.open(spreadsheet).worksheet(worksheet)
-    except:
-        wks = gc.open(spreadsheet).add_worksheet(worksheet, 50, 50)
-        if worksheet == "RDS_COST":
-            init_cost_sheet(wks)
-        else:
-            init_sheet(wks)
-    return wks
 
 
 # google spreadsheetへアップ
-def update_sheet(spreadsheet, worksheet, rds_name, rds_itype, rds_storage, rds_iops):
+def update_sheet(spreadsheet, worksheet, rds_info):
     # 日付を入れる
     d = datetime.now()
     d = d.strftime('%Y/%m/%d')
@@ -79,31 +90,27 @@ def update_sheet(spreadsheet, worksheet, rds_name, rds_itype, rds_storage, rds_i
     wks = open_sheet(spreadsheet, worksheet)
     col_num = len(wks.col_values(1)) + 1
 
-    cell_len = col_num + len(rds_name)
+    cell_len = col_num + len(rds_info)
     cell_range = 'A' + str(col_num) + ':H' + str(cell_len)
     cell_list = []
     cell_list = wks.range(cell_range)
 
     # 各データを格納
-    for i, name in enumerate(rds_name):
-        print rds_name[i]
+    for i, name in enumerate(rds_info):
+        count = i
+        print rds_info[count][1]
         column_num = col_num + i
 
-        if rds_iops[i] == 'None':
-            storage_type = "Magnetic"
-            rds_iops[i] = '=IF(C%(column)s="gp2", D%(column)s*3, "None")' % {'column': str(column_num)}
-        else:
-            storage_type = "PIOPS"
-
-        piops_throughput = 'IF(C%(column)s="PIOPS",E%(column)s*0.12/30.5/24,0)' % {'column': str(column_num)}
+        piops_throughput = rds_info[count][6]
+        print piops_throughput
         storage_cost = 'IF(C%(column)s="Magnetic", 0.12*D%(column)s/30.5/24 , IF(C%(column)s="gp2",0.138*D%(column)s/30.5/24,0.15*D%(column)s/30.5/24)+%(throughput_if)s)' % {'column': str(column_num), 'throughput_if': str(piops_throughput)}
 
         column_num = col_num + i
-        cell_list[(i) + (i * 7)].value = rds_name[i]
-        cell_list[(i + 1) + (i * 7)].value = rds_itype[i]
-        cell_list[(i + 2) + (i * 7)].value = storage_type
-        cell_list[(i + 3) + (i * 7)].value = rds_storage[i]
-        cell_list[(i + 4) + (i * 7)].value = rds_iops[i]
+        cell_list[(i) + (i * 7)].value = rds_info[count][1]
+        cell_list[(i + 1) + (i * 7)].value = rds_info[count][2]
+        cell_list[(i + 2) + (i * 7)].value = rds_info[count][3]
+        cell_list[(i + 3) + (i * 7)].value = rds_info[count][4]
+        cell_list[(i + 4) + (i * 7)].value = rds_info[count][5]
         cell_list[(i + 5) + (i * 7)].value = '=VLOOKUP(B%(column)s, RDS_COST!A2:B24, 2, FALSE)+%(storage_if)s' % {'column': str(column_num), 'storage_if': str(storage_cost)}
         cell_list[(i + 6) + (i * 7)].value = '=F' + str(column_num) + '*24'
         cell_list[(i + 7) + (i * 7)].value = '=G' + str(column_num) + '*30.5'
