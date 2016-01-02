@@ -9,7 +9,7 @@ import spreadsheets
 
 def rds_get_info(app_name, aws_access_key,
                  aws_secret_access_key, region):
-    #region connect
+    # region connect
     conn = boto.rds.connect_to_region(
         region,
         aws_access_key_id=aws_access_key,
@@ -50,4 +50,5 @@ def rds_get_info(app_name, aws_access_key,
     # 単価用シート
     spreadsheets.rds_costsheet_update(spreadsheet, "RDS_COST", region)
     # DBデータ用シート
-    spreadsheets.update_sheet(spreadsheet, worksheet, rds_name, rds_itype, rds_storage, rds_iops)
+    spreadsheets.update_sheet(spreadsheet, worksheet,
+                              rds_name, rds_itype, rds_storage, rds_iops)

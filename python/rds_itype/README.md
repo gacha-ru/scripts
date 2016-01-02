@@ -14,13 +14,13 @@ rds_itype
     pip install boto gspread oauth2client
     ```
 
-3. GoogleDriveのspreadsheetでapp.cfgで設定した"[name]_cost"シートを作成する
-   例：app.cfgで[aws]の場合"aws_cost"というシートを作成
+3. GoogleDriveのspreadsheetでapp.cfgで設定した"[name]_cost_2016"シートを作成する
+   例：app.cfgで[aws]の場合"aws_cost_2016"というシートを作成
 
 
 ### 使用方法 ###
     python rds_itype_main.py [account_name] [region]
- 
+
 +   `account_name` :
     pythonディレクトリのapp.cfgで設定した"name"
     "name"を複数設定しておくことでアカウントの切り替えができる。
