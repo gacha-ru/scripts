@@ -21,6 +21,12 @@ ec2_cost_dict = {
     "c3.2xlarge": 0.51,
     "c3.4xlarge": 1.02,
     "c3.8xlarge": 2.04,
+    "c4.large": 0.14,
+    "c4.xlarge": 0.279,
+    "c4.4.2xlarge": 0.559,
+    "c4.4.4xlarge": 1.117,
+    "c4.4.8xlarge": 2.234,
+    "c1.medium": 0.16,
     "c1.medium": 0.16,
     "c1.xlarge": 0.63,
     "cc2.8xlarge": 2.35,
@@ -42,7 +48,8 @@ ec2_cost_dict = {
     "hi1.4xlarge": 3.28,
     "t2.micro": 0.02,
     "t2.small": 0.04,
-    "t2.medium": 0.080
+    "t2.medium": 0.080,
+    "t2.large": 0.16
 }
 
 

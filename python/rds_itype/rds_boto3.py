@@ -71,7 +71,10 @@ class Rds:
                      str(dbinstance['AllocatedStorage']),
                      str(iops),
                      str(dbinstance['AvailabilityZone']),
-                     str(sec_group[:sgcount])]
+                     str(sec_group[:sgcount]),
+                     dbinstance['PreferredBackupWindow'],
+                     dbinstance['PreferredMaintenanceWindow']
+                     ]
                 )
 
         return rds_info

@@ -8,17 +8,32 @@ from rds_boto3 import Rds
 # google spreadsheet操作系関数
 import spreadsheets
 
+import sys
+import ConfigParser
+from sys import argv
+
 '''
 [main function]
 '''
 if __name__ == "__main__":
-    appname = 'default'
+
+    argvs = sys.argv
+    argc = len(argvs)
+
+    if not argc == 3:
+        print u'Usage: python %s app_name filter_word' % argv[0]
+        quit()
+
+    # app.cfgから読み取る情報の選択
+    appname = argvs[1]
+    # NameTag検索用文字列
+    filter_word = argvs[2]
     region = "ap-northeast-1"
-    filterarg = ""
 
     r = Rds()
-    rds_info = r.get_info(r.connection(appname, region), filterarg)
+    rds_info = r.get_info(r.connection(appname, region), filter_word)
 
+    print rds_info
     elements = len(rds_info[0])
     for count in range(0, len(rds_info)):
         for element in range(1, elements):

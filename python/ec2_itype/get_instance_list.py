@@ -27,7 +27,7 @@ def ec2_get_instance_type(app_name, aws_access_key,
                 ec2_dict[server_name] = i_type
 
     # spreadsheet名
-    spreadsheet = app_name + "_cost"
+    spreadsheet = app_name + "_cost_" + "2016"
     # worksheet名
     worksheet = "now_instances"
 

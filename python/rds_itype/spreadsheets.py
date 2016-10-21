@@ -59,7 +59,7 @@ def open_sheet(gc, spreadsheet, worksheet):
 
 # sheetのフォーマットを作る
 def init_sheet(wks):
-    cell_range = 'A1:J1'
+    cell_range = 'A1:N1'
     cell_list = wks.range(cell_range)
     format_list = [
         'Name',
@@ -69,6 +69,10 @@ def init_sheet(wks):
         'Storage Type',
         'Storage',
         'IOPS',
+        'AZ',
+        'SecurityGroups',
+        'BackupWindow',
+        'MaintenanceWindow',
         'hourly',
         'daily',
         'monthly'
@@ -96,9 +100,9 @@ def update_sheet(spreadsheet, worksheet, rds_info):
     wks = open_sheet(login(), spreadsheet, worksheet)
     col_num = len(wks.col_values(1)) + 1
     cell_len = col_num + len(rds_info)
-    cell_range = 'A' + str(col_num) + ':J' + str(cell_len)
-    # A~J cellの数
-    upcells = 9
+    cell_range = 'A' + str(col_num) + ':N' + str(cell_len)
+    # A~N cellの数
+    upcells = 13
     cell_list = []
     cell_list = wks.range(cell_range)
 
@@ -113,13 +117,13 @@ def update_sheet(spreadsheet, worksheet, rds_info):
             'column': str(column_num), 'throughput_if': str(piops_throughput)}
 
         column_num = col_num + count
-        for info_num in range(1, 8):
+        for info_num in range(1, 12):
             cell_list[(count + info_num - 1) + (count * upcells)].value = rds_info[count][info_num]
 
         cell_list[(count + info_num) + (count * upcells)].value = '=VLOOKUP(D%(column)s, RDS_COST!A2:B24, 2, FALSE)+%(storage_if)s' % {
             'column': str(column_num), 'storage_if': str(storage_cost)}
-        cell_list[(count + info_num + 1) + (count * upcells)].value = '=H' + str(column_num) + '*24'
-        cell_list[(count + info_num + 2) + (count * upcells)].value = '=I' + str(column_num) + '*30.5'
+        cell_list[(count + info_num + 1) + (count * upcells)].value = '=L' + str(column_num) + '*24'
+        cell_list[(count + info_num + 2) + (count * upcells)].value = '=M' + str(column_num) + '*30.5'
 
     # 上記で格納した値を一括アップ
     try:
