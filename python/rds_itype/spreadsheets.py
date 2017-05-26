@@ -93,12 +93,13 @@ def init_cost_sheet(wks):
 # google spreadsheetへアップ
 def update_sheet(spreadsheet, worksheet, rds_info):
     # 日付を入れる
-    d = datetime.now()
-    d = d.strftime('%Y/%m/%d')
+    #d = datetime.now()
+    #d = d.strftime('%Y/%m/%d')
 
     # シート情報を取得
     wks = open_sheet(login(), spreadsheet, worksheet)
-    col_num = len(wks.col_values(1)) + 1
+    #col_num = len(wks.col_values(1)) + 1
+    col_num = 2
     cell_len = col_num + len(rds_info)
     cell_range = 'A' + str(col_num) + ':N' + str(cell_len)
     # A~N cellの数

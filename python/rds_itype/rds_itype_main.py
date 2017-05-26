@@ -43,7 +43,7 @@ if __name__ == "__main__":
                 print str(rds_info[count][element])
 
     # spreadsheet名
-    sheet_name = appname + "_cost_" + "2016"
+    sheet_name = appname + "_cost_" + "2017"
     # worksheet名
     ws_name = "RDS_instances"
     # google spreadsheetへ書き込み
